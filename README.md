@@ -1,2 +1,2 @@
-# TechEd-2026
+# GOC234
 KOSEC Solutions, s.r.o.
