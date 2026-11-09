@@ -1,0 +1,78 @@
+// *********************************************************************************
+//
+//		Created by SMS Export object wizard
+//
+//		Tuesday, October 13, 2026 created
+//
+//		File Name: C:\Users\LabAdmin\Desktop\Collections\W11-25H2-Enterprise.mof
+//
+// Comments : Kosec Solutions, s.r.o.
+//
+//
+// *********************************************************************************
+
+
+// ***** Class : SMS_Collection *****
+[SecurityVerbs(-1)]
+instance of SMS_Collection
+{
+	CloudSyncCount = 0;
+	CollectionID = "";
+	CollectionRules = {
+instance of SMS_CollectionRuleQuery
+{
+	QueryExpression = "select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System inner join SMS_G_System_OPERATING_SYSTEM on SMS_G_System_OPERATING_SYSTEM.ResourceID = SMS_R_System.ResourceId where SMS_G_System_OPERATING_SYSTEM.Caption like \"Microsoft Windows 11 Enterprise%\" and SMS_G_System_OPERATING_SYSTEM.BuildNumber = \"26200\" order by SMS_R_System.NetbiosName";
+	QueryID = 1;
+	RuleName = "All Windows 11 25H2 Enterprise";
+}};
+	CollectionType = 2;
+	CollectionVariablesCount = 0;
+	Comment = "";
+	CurrentStatus = 0;
+	FullEvaluationLastRefreshTime = "20261013070222.000000+***";
+	FullEvaluationMemberChanges = 1;
+	FullEvaluationMemberChangeTime = "20261013070222.000000+***";
+	FullEvaluationNextRefreshTime = "20261013154900.000000+***";
+	FullEvaluationRunTime = 1110;
+	HasProvisionedMember = TRUE;
+	IncludeExcludeCollectionsCount = 0;
+	IncrementalEvaluationLastRefreshTime = "19691231160000.000000+***";
+	IncrementalEvaluationMemberChanges = 0;
+	IncrementalEvaluationMemberChangeTime = "19691231160000.000000+***";
+	IncrementalEvaluationRunTime = 0;
+	IsBuiltIn = FALSE;
+	IsReferenceCollection = FALSE;
+	ISVData = NULL;
+	ISVDataSize = 0;
+	ISVString = "";
+	LastChangeTime = "20261013070212.000000+***";
+	LastMemberChangeTime = "20261013070222.000000+***";
+	LastRefreshTime = "20261013070222.000000+***";
+	LimitToCollectionID = "CHQ00015";
+	LimitToCollectionName = "GO234 - All Desktop and Server Clients";
+	LocalMemberCount = 1;
+	MemberClassName = "";
+	MemberCount = 1;
+	MonitoringFlags = 0;
+	Name = "All Windows 11 25H2 Enterprise";
+	ObjectPath = NULL;
+	OwnedByThisSite = TRUE;
+	PowerConfigsCount = 0;
+	RefreshSchedule = {
+instance of SMS_ST_RecurInterval
+{
+	DayDuration = 0;
+	DaySpan = 0;
+	HourDuration = 0;
+	HourSpan = 1;
+	IsGMT = FALSE;
+	MinuteDuration = 0;
+	MinuteSpan = 0;
+	StartTime = "20261013084900.000000+***";
+}};
+	RefreshType = 6;
+	ServicePartners = 0;
+	ServiceWindowsCount = 0;
+	UseCluster = FALSE;
+};
+// ***** End *****
