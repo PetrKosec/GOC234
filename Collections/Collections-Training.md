@@ -1,3 +1,5 @@
+# Collections (20 minutes)
+
 Folder: Maintenance Windows
 	- Daily: 08:00-09:00 - All Deployments
 	- Daily: 13:00-14:00 - All Deployments
