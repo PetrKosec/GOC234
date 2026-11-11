@@ -25,3 +25,6 @@ Invoke-CimMethod `
  -ClassName SMS_Client ` 
  -MethodName TriggerSchedule ` 
  -Arguments @{sScheduleID="{00000000-0000-0000-0000-000000000113}"} 
+
+
+# Windows Installer Source List Update Cycle (SourceUpdateManager.log) 
