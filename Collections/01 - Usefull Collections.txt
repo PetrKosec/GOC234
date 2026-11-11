@@ -1,0 +1,259 @@
+1. All Client systems 
+2. ALL Non client systems 
+3.  ALL Inactive systems 
+4. All Obsolete system 
+5. Computers with two records one with Yes and other With NO / Duplicate client Yes or No 
+6. Last hardware inventory 14 days 
+7. Last software inventory 14 days 
+8. Last Data discovery cycle. 
+9. List only XYZ package, XYZ Advertisement success systems’ collection 
+10. List only XYZ package, XYZ Advertisement Failed systems’ collection 
+11. List only XYZ subnet collection system .with more examples like IP based..etc..
+12. If systems found in XYZ collection then add to ABC Collection 
+13. All SMS server system collection.. like based on SMS/SCCM Roles..like MP,DP,SLP…etc.. 
+14. Creating collection for All windows server, workstation, DP, BDP collection 
+	More are similar to above 13th point huh…
+15.  All system’s with AD site Name based like “Dubai – AD site”
+16. Collection limiting to sub collection, linking 
+	How to link a collection with other collection as a sub collection..
+17. Systems are in “A” collection but not in “B” Collection & Vice versa 
+18. Create a collection based on “XYZ” Software installed systems 
+19. In collection “XYZ” File inventory (s\w inventory based) installed system 
+20. In collection “XYZ” file specific method (H\w inventory based) system 
+21. XYZ patch Installed & Not Installed system 
+22. All windows update Agent version 7.6 below 
+23. XYZ user/group collection (COLLECTION OF COMPUTERS BASED ON USERS)
+24. Workstation computers that have not restarted the last 7 days
+25. All Clients without a SCCM Client installed  (All Non Client Systems collection) 
+26. All Unapproved clients
+27. Old version of SCCM Clients Collection
+28. Patching Collections 
+       a).All computers that are in a state of pending restart
+        b).All computers that failed to install an update
+       c).All computers that are waiting for another installation to complete 
+29. Local Client Systems
+30. for software distribution status if system pending for reboot
+31. Create a collection with systems without Adobe Reader 9
+32. Creating a non-Compliance collection for remediation (in DCM)
+33. Systems part of what all collections:
+34. Only Desktops in collection
+34. SCCM / SMS Console Installed Systems Collection
+35. All Required Patches in a specific collection systems
+36. How to find all Collections WQL Query and collection ID and Names in the SQL ?
+37. how to find all collection ID's from SQL ?
+
+1. Client all system collection 
+select Name, SMSAssignedSites, IPAddresses, IPSubnets, ADSiteName, OperatingSystemNameandVersion, ResourceDomainORWorkgroup, LastLogonUserDomain, LastLogonUserName, SMSUniqueIdentifier, ResourceId, ResourceType, NetbiosName from sms_r_system where Client = 1
+
+2. All Non-Client Systems
+select Name, SMSAssignedSites, IPAddresses, IPSubnets, OperatingSystemNameandVersion, ResourceDomainORWorkgroup, LastLogonUserDomain, LastLogonUserName, SMSUniqueIdentifier, ResourceId, ResourceType, NetbiosName from sms_r_system where Client = 0 or Client is null
+
+3.Inactive systems 
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System where SMS_R_System.Active = 0 
+
+4. All Obsolete Clients: 
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System where SMS_R_System.Obsolete = 1 
+
+5. Duplicate client Yes or No 
+R.ResourceID,R.ResourceType,R.Name,R.SMSUniqueIdentifier,R.ResourceDomainORWorkgroup,R.Client from SMS_R_System as r full join SMS_R_System as s1 on s1.ResourceId = r.ResourceId full join SMS_R_System as s2 on s2.Name = s1.Name where s1.Name = s2.Name and s1.ResourceId != s2.ResourceId
+
+6. Last hardware inventory 14 days 
+select SMS_R_System.ResourceID,SMS_R_System.ResourceType,SMS_R_System.Name,SMS_R_System.SMSUniqueIdentifier,SMS_R_System.ResourceDomainORWorkgroup,SMS_R_System.Client from SMS_R_System inner join SMS_G_System_COMPUTER_SYSTEM on SMS_G_System_COMPUTER_SYSTEM.ResourceID = SMS_R_System.ResourceId where SMS_G_System_COMPUTER_SYSTEM.Name not in (select SMS_R_System.Name from SMS_R_System inner join SMS_G_System_WORKSTATION_STATUS on SMS_G_System_WORKSTATION_STATUS.ResourceID = SMS_R_System.ResourceId where SMS_G_System_WORKSTATION_STATUS.LastHardwareScan >= DateAdd(dd,-14,GetDate()) )
+
+7. Last software inventory 14 days back
+select SMS_R_System.ResourceID,SMS_R_System.ResourceType,SMS_R_System.Name,SMS_R_System.SMSUniqueIdentifier,SMS_R_System.ResourceDomainORWorkgroup,SMS_R_System.Client from SMS_R_System where ResourceId in (select ResourceID from SMS_R_System inner join SMS_G_System_LastSoftwareScan on SMS_G_System_LastSoftwareScan.ResourceID = SMS_R_System.ResourceId where DATEDIFF(dd,SMS_G_System_LastSoftwareScan.LastScanDate,GetDate()) > 14 )
+
+8. DDR not sent from last 14 Days
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System where SMS_R_System.ResourceId not in (select ResourceID from SMS_R_System where AgentName in ("Heartbeat Discovery") and DATEDIFF(day,AgentTime,GetDate())<=14)
+
+9. Computer that ran an advertisement successfully:
+select sys.ResourceID,sys.ResourceType,sys.Name,sys.SMSUniqueIdentifier,sys.ResourceDomainORWorkgroup,sys.Client from sms_r_system as sys inner join SMS_ClientAdvertisementStatus as offer on sys.ResourceID=offer.ResourceID  WHERE AdvertisementID = ‘A0120005′ and LastStateName = ‘Succeeded’ 
+
+10. Computer that failed to run an advertisement:
+select sys.ResourceID,sys.ResourceType,sys.Name,sys.SMSUniqueIdentifier,sys.ResourceDomainORWorkgroup,sys.Client from sms_r_system as sys inner join SMS_ClientAdvertisementStatus as offer on sys.ResourceID=offer.ResourceID  WHERE AdvertisementID = ‘A0120005′ and LastStateName = ‘Failed’ 
+Notice for both collections you need to find the unique advertisement ID 
+
+11. XYZ subnet collection system 
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System where SMS_R_System.IPSubnets like "130.130.0.0"
+
+12. Add XYZ system’s to a collection of Existing 
+select *  from  SMS_R_System where SMS_R_System.Name not in (select name from SMS_CM_RES_COLL_CEN00394)
+
+Note:-Collection ID CEN000394 systems not in will show here.. you can play with limit collection membership if you want..here...more useful
+
+13. Local Server Systems
+select SMS_R_System.ResourceID,SMS_R_System.ResourceType,SMS_R_System.Name,SMS_R_System.SMSUniqueIdentifier,SMS_R_System.ResourceDomainORWorkgroup,SMS_R_System.Client from SMS_R_System inner join SMS_Identification on SMS_Indentification.ThisSiteCode = SMS_R_System.SMSAssignedSites where SMS_R_System.OperatingSystemNameandVersion LIKE '%Server%' AND SMS_R_System.Client IS NULL
+
+14. All BDP Systems
+select
+SMS_R_SYSTEM.ResourceID
+,SMS_R_SYSTEM.ResourceType
+,SMS_R_SYSTEM.Name
+,SMS_R_SYSTEM.SMSUniqueIdentifier
+,SMS_R_SYSTEM.ResourceDomainORWorkgroup
+,SMS_R_SYSTEM.Client
+FROM
+SMS_R_System
+WHERE
+Name IN (Select ServerName FROM SMS_DistributionPointInfo WHERE IsPeerDP = "1")
+
+All sms/sccm Distrubution Point Role enabled systems
+
+select *  from  SMS_R_System inner join SMS_G_System_SCANPACKAGEVERSION on SMS_G_System_SCANPACKAGEVERSION.ResourceID = SMS_R_System.ResourceId where SMS_R_System.SystemRoles in ("SMS Distribution Point")
+Note: - Change the above to your desired role it will work…
+System with specific IP address
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System where SMS_R_System.IPAddresses like “10.10.10.%”
+
+All systems with a IP Address Range
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System where SMS_R_System.IPAddresses like “10.2.12.12[8-9]” or SMS_R_System.IPAddresses like “10.2.12.1[3-9][0-9]” or SMS_R_System.IPAddresses like “10.2.12.2[0-9][0-9]”
+
+All Ditribution Points
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System where SMS_R_System.SystemRoles = “SMS Distribution Point”
+ALL SMS roles installed systems:
+SELECT 
+  SMS_R_SYSTEM.ResourceID,
+  SMS_R_SYSTEM.ResourceType,
+  SMS_R_SYSTEM.Name,
+  SMS_R_SYSTEM.SMSUniqueIdentifier,
+  SMS_R_SYSTEM.ResourceDomainORWorkgroup,
+  SMS_R_SYSTEM.Client
+FROM 
+  SMS_R_System 
+WHERE 
+  SMS_R_System.SystemRoles LIKE "SMS %"
+15. All system’s with AD site based
+select *  from  SMS_R_System where SMS_R_System.ADSiteName like "HYDERABAD"
+
+16. Collection limiting to sub collection, linking 
+Read here it is very Basic http://verbalprocessor.com/2009/03/20/how-to-move-collections-in-configmgr/ 
+
+17. Systems are in “A” collection But not in “B” Collection & Vice versa 
+select *  from  SMS_R_System where SMS_R_System.Name not in (select name from SMS_CM_RES_COLL_CEN00394) and SMS_R_System.Name in (select name from SMS_CM_RES_COLL_CEN00395)
+
+Note:-The systems not in Colelction ID CEN000394 and systems in collection ID CEN00395 will show here ...again you can play with limit collection membership if you want..here...more usefull
+
+18. In collection “XYZ” Software installed system 
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System inner join SMS_G_System_ADD_REMOVE_PROGRAMS on SMS_G_System_ADD_REMOVE_PROGRAMS.ResourceId = SMS_R_System.ResourceId where SMS_G_System_ADD_REMOVE_PROGRAMS.DisplayName like "Microsoft Office Standard 2007"
+
+21.XYZ patch Installed & Not Installed system 
+
+SELECT DISTINCT 
+                      TOP (100) PERCENT SYS.Name0 AS [Machine Name], UCS.Status AS [Patch Status Code], UI.BulletinID, UI.ArticleID, UI.Title, 
+                      dbo.v_FullCollectionMembership.ResourceID, dbo.v_Collection.CollectionID, UI.CI_ID, dbo.CI_Contents.SourceSize /(1024.0*1024) AS SizeinMB
+FROM         dbo.v_UpdateContents INNER JOIN
+                      dbo.v_FullCollectionMembership INNER JOIN
+                      dbo.v_Collection ON dbo.v_FullCollectionMembership.CollectionID = dbo.v_Collection.CollectionID INNER JOIN
+                      dbo.v_R_System AS SYS LEFT OUTER JOIN
+                      dbo.v_Update_ComplianceStatusAll AS UCS ON SYS.ResourceID = UCS.ResourceID INNER JOIN
+                      dbo.v_UpdateInfo AS UI ON UCS.CI_ID = UI.CI_ID ON dbo.v_FullCollectionMembership.ResourceID = UCS.ResourceID ON 
+                      dbo.v_UpdateContents.CI_ID = UI.CI_ID INNER JOIN
+                      dbo.CI_Contents ON dbo.v_UpdateContents.Content_ID = dbo.CI_Contents.Content_ID
+WHERE     (UCS.Status IN ('2')) AND (dbo.v_Collection.CollectionID = 'HCC000FB')
+ORDER BY UI.ArticleID 
+
+22. All windows update Agent version 7.6 below 
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System inner join SMS_G_System_WINDOWSUPDATEAGENTVERSION on SMS_G_System_WINDOWSUPDATEAGENTVERSION.ResourceId = SMS_R_System.ResourceId where SMS_G_System_WINDOWSUPDATEAGENTVERSION.Version not like "7.2.6001.788" and SMS_R_System.Client = 1
+
+23. XYZ user/group collection (COLLECTION OF COMPUTERS BASED ON USERS)
+select SMS_R_System.ResourceID,SMS_R_System.ResourceType,SMS_R_System.Name,SMS_R_System.SMSUniqueIdentifier,SMS_R_System.ResourceDomainORWorkgroup,SMS_R_System.Client from SMS_R_System inner join SMS_G_System_COMPUTER_SYSTEM on SMS_G_System_COMPUTER_SYSTEM.ResourceID = SMS_R_System.ResourceId where SMS_G_System_COMPUTER_SYSTEM.UserName in (select UniqueUserName from SMS_R_User where UserOUName = "xxxx /SECURITY USERS & GROUPS" )
+
+24.Workstation computers that have not restarted the last 7 days: 
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System INNER JOIN SMS_G_System_OPERATING_SYSTEM ON SMS_G_System_OPERATING_SYSTEM.ResourceID = SMS_R_System.ResourceId  WHERE (SMS_G_System_OPERATING_SYSTEM.Caption like "%xp%" or SMS_G_System_OPERATING_SYSTEM.Caption like "%vista%" or SMS_G_System_OPERATING_SYSTEM.Caption like "%windows 7%") and (DateDiff(day, SMS_G_System_OPERATING_SYSTEM.LastBootUpTime, GetDate()) >7) 
+
+25. All Clients without a Config Mgr. Agent installed(All Non Client Systems collection) 
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System where SMS_R_System.Client is null or=0 
+
+26.All Unapproved clients 
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System inner join SMS_CM_RES_COLL_SMS00001 on SMS_CM_RES_COLL_SMS00001.ResourceId = SMS_R_System.ResourceId where SMS_CM_RES_COLL_SMS00001.IsApproved<>1
+
+27. Old version of SCCM Clients Collection 
+Sometimes old version could cause of some issues… below is a quick query to find the old version of systems
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System where ((DATEDIFF(hh, SMS_R_SYSTEM.AgentTime, getdate()) < 23) and AgentName = "SMS_AD_SYSTEM_DISCOVERY_AGENT") and ( SMS_R_System.ClientVersion is null)
+Note: You can write in this way also.. Just change the version you want to put
+select SMS_R_System.ResourceId, SMS_R_System.ResourceType, SMS_R_System.Name, SMS_R_System.SMSUniqueIdentifier, SMS_R_System.ResourceDomainORWorkgroup, SMS_R_System.Client from  SMS_R_System where SMS_R_System.ClientVersion != "4.00.6221.1000"
+
+28. For Patch Management useful Collections 
+
+a) All computers that are in a state of pending restart: 
+select SMS_R_SYSTEM.ResourceID, SMS_R_SYSTEM.ResourceType, SMS_R_SYSTEM.Name, SMS_R_SYSTEM.SMSUniqueIdentifier, SMS_R_SYSTEM.ResourceDomainORWorkgroup, SMS_R_SYSTEM.Client from sms_r_system AS sms_r_system inner join SMS_UpdateComplianceStatus as c on c.machineid=sms_r_system.resourceid where c.LastEnforcementMessageID = 9 
+
+b). All computers that failed to install an update: 
+select SMS_R_SYSTEM.ResourceID, SMS_R_SYSTEM.ResourceType, SMS_R_SYSTEM.Name, SMS_R_SYSTEM.SMSUniqueIdentifier, SMS_R_SYSTEM.ResourceDomainORWorkgroup, SMS_R_SYSTEM.Client from sms_r_system inner join SMS_UpdateComplianceStatus on SMS_UpdateComplianceStatus.machineid=sms_r_system.resourceid where SMS_UpdateComplianceStatus.LastEnforcementMessageID = 11 
+
+Note: For other states …..
+1	Enforcement started
+3	Waiting for another installation to complete
+6	General failure
+8	Installing update
+9	Pending system restart
+10	Successfully installed update
+11	Failed to install update
+12	Downloading update
+13	Downloaded update
+
+c) All computers that are waiting for another installation to complete: 
+
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from sms_r_system AS sms_r_system inner join SMS_UpdateComplianceStatus as c on c.machineid=sms_r_system.resourceid where c.LastEnforcementMessageID = 3
+
+29. Local Client Systems
+select SMS_R_System.ResourceID,SMS_R_System.ResourceType,SMS_R_System.Name,SMS_R_System.SMSUniqueIdentifier,SMS_R_System.ResourceDomainORWorkgroup,SMS_R_System.Client from SMS_R_System inner join SMS_Identification on SMS_Indentification.ThisSiteCode = SMS_R_System.SMSAssignedSites where SMS_R_System.OperatingSystemNameandVersion LIKE '%Workstation%' AND SMS_R_System.Client IS NULL
+
+30. for software distribution status if system pending for reboot
+For software distribution status if system pending for reboot
+ 
+select 
+     SMS_R_SYSTEM.ResourceID,
+     SMS_R_SYSTEM.ResourceType,
+     SMS_R_SYSTEM.Name,
+     SMS_R_SYSTEM.SMSUniqueIdentifier,
+     SMS_R_SYSTEM.ResourceDomainORWorkgroup,
+     SMS_R_SYSTEM.Client 
+ from 
+     sms_r_system AS sms_r_system
+     join SMS_StatMsg  as st on sms_r_system.Name = st.MachineName
+     join SMS_AdvertisementStatusInformation sti on st.MessageID = sti.MessageID 
+ where 
+        sti.messagestate = 102
+ 
+
+102 is the reboot pending code 
+You can get the complete list of codes using the following sql query
+ select distinct messagestate,MessageStateName from dbo.v_AdvertisementStatusInformation
+
+31. Create a collection with systems without Adobe Reader 9
+select SMS_R_SYSTEM.ResourceID, SMS_R_SYSTEM.ResourceType, SMS_R_SYSTEM.Name, SMS_R_SYSTEM.SMSUniqueIdentifier, SMS_R_SYSTEM.ResourceDomainORWorkgroup, SMS_R_SYSTEM.Client from SMS_R_System inner join SMS_G_System_COMPUTER_SYSTEM on SMS_G_System_COMPUTER_SYSTEM.ResourceID = SMS_R_System.ResourceId where SMS_R_System.OperatingSystemNameandVersion not like "%Server%" and SMS_G_System_COMPUTER_SYSTEM.Name not in (select distinct SMS_G_System_COMPUTER_SYSTEM.Name from SMS_R_System inner join SMS_G_System_COMPUTER_SYSTEM on SMS_G_System_COMPUTER_SYSTEM.ResourceID = SMS_R_System.ResourceId inner join SMS_G_System_ADD_REMOVE_PROGRAMS on SMS_G_System_ADD_REMOVE_PROGRAMS.ResourceID = SMS_R_System.ResourceId where SMS_G_System_ADD_REMOVE_PROGRAMS.DisplayName like "%Adobe Reader 9%")
+
+32. Creating a non-Compliance collection for remediation (in DCM)
+
+SMS_R_SYSTEM.ResourceID,
+SMS_R_SYSTEM.ResourceType, SMS_R_SYSTEM.Name,
+SMS_R_SYSTEM.SMSUniqueIdentifier,
+SMS_R_SYSTEM.ResourceDomainORWorkgroup,
+SMS_R_SYSTEM.Client from SMS_R_System inner join SMS_G_System_CI_ComplianceState on SMS_G_System_CI_ComplianceState.ResourceID = SMS_R_System.ResourceId where SMS_G_System_CI_ComplianceState.ComplianceStateName= “non-compliant” and SMS_G_System_CI_ComplianceState.LocalizedDisplayName= “<Baseline Name>”
+
+33. A specific System is part of what all collections:
+SELECT v_R_System.Name0, v_Collection.Name FROM v_FullCollectionMembership INNER JOIN v_R_System ON v_FullCollectionMembership.ResourceID = v_R_System.ResourceID INNER JOIN v_Collection ON v_FullCollectionMembership.CollectionID = v_Collection.CollectionID WHERE (v_R_System.Name0 = 'Systemname')
+
+34. Only Desktops in the collections
+select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System inner join SMS_G_System_SYSTEM_ENCLOSURE on SMS_G_System_SYSTEM_ENCLOSURE.ResourceID = SMS_R_System.ResourceId where SMS_G_System_SYSTEM_ENCLOSURE.ChassisTypes != "10"
+
+Note:- for Chassis Type or number read here http://sms-hints-tricks.blogspot.com/2008/07/laptop-collection.html
+
+35. SMS Console Installed Systems Collection
+select SMS_R_System.ResourceID,SMS_R_System.ResourceType,SMS_R_System.Name,SMS_R_System.SMSUniqueIdentifier,SMS_R_System.ResourceDomainORWorkgroup,SMS_R_System.Client from SMS_R_System inner join SMS_G_System_ADD_REMOVE_PROGRAMS on SMS_G_System_ADD_REMOVE_PROGRAMS.ResourceID = SMS_R_System.ResourceId where SMS_G_System_ADD_REMOVE_PROGRAMS.DisplayName = "Microsoft Systems Management Server 2003 Administrator Console"
+
+36. All Required Patches in a specific collection systems – SQL
+SELECT DISTINCT 
+                      TOP (100) PERCENT SYS.Name0 AS [Machine Name], UCS.Status AS [Patch Status Code],                       CASE WHEN UCS.Status = '2' THEN 'Applicable' WHEN UCS.Status = '3' THEN 'Installed' ELSE '' END AS 'Patch Status', UI.BulletinID, UI.ArticleID, UI.Title,                       dbo.v_FullCollectionMembership.ResourceID, dbo.v_Collection.CollectionID FROM         dbo.v_FullCollectionMembership INNER JOIN  dbo.v_Collection ON dbo.v_FullCollectionMembership.CollectionID = dbo.v_Collection.CollectionID INNER JOIN dbo.v_R_System AS SYS LEFT OUTER JOIN  dbo.v_Update_ComplianceStatusAll AS UCS ON SYS.ResourceID = UCS.ResourceID INNER JOIN  dbo.v_UpdateInfo AS UI ON UCS.CI_ID = UI.CI_ID ON dbo.v_FullCollectionMembership.ResourceID = UCS.ResourceID WHERE     (UCS.Status IN ('3', '2')) AND (dbo.v_Collection.CollectionID = 'CollectionID') ORDER BY UI.ArticleID
+
+37. How to find all Collections WQL Query and collection ID and Names in the SQL ? (SQL not the WQL)
+
+SELECT     TOP (100) PERCENT dbo.v_Collection.Name, dbo.v_Collection.CollectionID, dbo.v_CollectionRuleQuery.RuleName, dbo.v_CollectionRuleQuery.QueryID, 
+                      dbo.v_CollectionRuleQuery.LimitToCollectionID, dbo.v_CollectionRuleQuery.QueryExpression
+FROM         dbo.v_Collection INNER JOIN
+                      dbo.v_CollectionRuleQuery ON dbo.v_Collection.CollectionID = dbo.v_CollectionRuleQuery.CollectionID
+ORDER BY dbo.v_Collection.Name, dbo.v_Collection.CollectionID
+
+38. how to find all collection ID's from SQL ? (SQL – not WQL)
+SELECT     Name, CollectionID
+FROM         dbo.v_Collection  
