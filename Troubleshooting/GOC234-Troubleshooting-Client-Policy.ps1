@@ -41,3 +41,12 @@ Invoke-WMIMethod -ComputerName <computerName> -Namespace root\ccm -Class SMS_CLI
 Invoke-WMIMethod -ComputerName <computerName> -Namespace root\ccm -Class SMS_CLIENT -Name TriggerSchedule "{00000000-0000-0000-0000-000000000021}" # Machine Policy Assignments Request
 
 Invoke-WMIMethod -ComputerName <computerName> -Namespace root\ccm -Class SMS_CLIENT -Name TriggerSchedule "{00000000-0000-0000-0000-000000000022}" # Machine Policy Evaluation
+
+
+# Example
+$Computers = Get-Content -Path $PSScriptRoot\Computers.txt
+
+ForEach ($comp in $Computers) {
+    Write-Host "Triggering Hardware Inventory on $comp"
+    Invoke-WMIMethod -ComputerName $comp -Namespace root\ccm -Class SMS_CLIENT -Name TriggerSchedule "{00000000-0000-0000-0000-000000000001}"  # Hardware Inventory
+}
