@@ -28,3 +28,16 @@ Invoke-CimMethod `
 
 
 # Windows Installer Source List Update Cycle (SourceUpdateManager.log) 
+
+
+Invoke-WMIMethod -ComputerName <computerName> -Namespace root\ccm -Class SMS_CLIENT -Name TriggerSchedule "{00000000-0000-0000-0000-000000000001}" # Hardware Inventory Cycle
+
+Invoke-WMIMethod -ComputerName <computerName> -Namespace root\ccm -Class SMS_CLIENT -Name TriggerSchedule "{00000000-0000-0000-0000-000000000002}" # Software Inventory Cycle
+
+Invoke-WMIMethod -ComputerName <computerName> -Namespace root\ccm -Class SMS_CLIENT -Name TriggerSchedule "{00000000-0000-0000-0000-000000000003}" # Data Discovery Record (Heartbeat Discovery)
+
+Invoke-WMIMethod -ComputerName <computerName> -Namespace root\ccm -Class SMS_CLIENT -Name TriggerSchedule "{00000000-0000-0000-0000-000000000121}" # Application Deployment Evaluation
+
+Invoke-WMIMethod -ComputerName <computerName> -Namespace root\ccm -Class SMS_CLIENT -Name TriggerSchedule "{00000000-0000-0000-0000-000000000021}" # Machine Policy Assignments Request
+
+Invoke-WMIMethod -ComputerName <computerName> -Namespace root\ccm -Class SMS_CLIENT -Name TriggerSchedule "{00000000-0000-0000-0000-000000000022}" # Machine Policy Evaluation
