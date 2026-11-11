@@ -1,4 +1,4 @@
-$VMName = "HYD-CM1"
+ $VMName = "HYD-CM1"
 $VHDPath = "E:\HYD-CM1\Virtual Hard Disks\CM1-DATA.vhdx"
 
 if (-not (Test-Path $VHDPath))
@@ -30,4 +30,27 @@ Add-VMHardDiskDrive `
     -VMName $VMName `
     -Path $VHDPath
 
-Write-Host "Disk attached successfully." -ForegroundColor Green 
+Write-Host "Disk attached successfully." -ForegroundColor Green
+
+# $VMName = "HYD-CM1"
+
+Invoke-Command -VMName $VMName -ScriptBlock {
+
+    $Disk = Get-Disk |
+        Where-Object {
+            $_.PartitionStyle -eq 'RAW'
+        } |
+        Sort-Object Size -Descending |
+        Select-Object -First 1
+
+    $Disk | Set-Disk -IsOffline $false
+    $Disk | Set-Disk -IsReadOnly $false
+
+    $Disk |
+        Initialize-Disk -PartitionStyle GPT -PassThru |
+        New-Partition -UseMaximumSize -DriveLetter F |
+        Format-Volume `
+            -FileSystem NTFS `
+            -NewFileSystemLabel "CM1-DATA" `
+            -Confirm:$false
+} 
