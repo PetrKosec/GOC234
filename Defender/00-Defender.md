@@ -1,12 +1,14 @@
 ## Microsoft Defender Antivirus
 ```
 Get-MPComputerStatus
+(Get-MPComputerStatus).RealTimeProtectionEnabled
+(Get-MPComputerStatus).AntivirusSignatureVersion
+(Get-MPComputerStatus).AntivirusSignatureLastUpdated
 Get-MpComputerStatus | Select-Object AMEngineVersion, AntivirusSignatureVersion, AntivirusSignatureLastUpdated
 ```
-AMEngineVersion (verze skenovacího jádra)
-AntivirusSignatureVersion (Security Inteligence version) - verze virových definic: 1.459.216.0␣␣ 
+AMEngineVersion (verze skenovacího jádra)  
+AntivirusSignatureVersion (Security Intelligence version) - verze virových definic: 1.459.216.0  
 AntivirusSignatureLastUpdate (čas poslední aktualizace)
-
 ## Jak pustit aktualizaci ručně: Update
 
 ### Kontrola historie zablokovaných hrozeb
