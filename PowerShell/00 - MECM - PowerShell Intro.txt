@@ -1,0 +1,34 @@
+https://github.com/ViaMonstra/powershellconfigmgrandintune
+
+# Windows PowerShell vs. PowerShell Core
+
+Windows PowerShell 5.1
+ 
+	• Built on top of the .NET Framework v4.5
+	• Powershell.exe
+ 
+PowerShell 7.3
+ 
+	• Built on .NET 7.0 (.NET Core)
+	• Cross-platform (Windows, macOS, and Linux)
+	• X86, x64, and ARM
+	• Pwsh.exe
+ 
+https://github.com/powershell
+ 
+$PSVersionTable
+(Get-Command).count
+
+Editors
+	• Notepad ++
+	• PowerShell ISE
+	• Visual Studio Code (PowerShell extension)
+	• Cloud Shell - portal.azure.com - Azure Cloud Shell
+		○ Az vm list --out table
+	• GitHub.dev
+ rtcuts-windows.pdf
+keyboard-shortcuts-macos.pdf
+
+Code.visualstudio.com/shortcuts/keyboard-sho
+
+Intune, Graph, CM
