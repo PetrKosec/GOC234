@@ -1,0 +1,43 @@
+Client Tools
+	• ClientSpy
+	• Deployment Monitoring Tool
+	• Policy Spy
+ 
+Support Center
+	• Support Center Client Tools
+	• PowerShell Integration
+	• Support Center Viewer Tools
+	• Support Center OneTrace
+ 
+	• Support Center Client Data Collector
+	• Support Center Client Tools
+	• Support Center Log File Viewer
+	• Support Center OneTrace
+	• Support Center View
+ 
+	• %ProgramFiles%\SMS_CCM\Logs\
+ 
+SUP
+Site Server:
+WCM.log
+Wsyncmgr.log
+ 
+SUP:
+WSUSCtrl.log
+SoftwareDistribution.log
+ 
+Client:
+ScanAgent.log
+WUAHandler.log
+WindowsUpdate.log
+UpdatesHandler.log
+UpdateStore.log
+ 
+Defender
+- Forefront Client Security
+- System Center Endpoint Protection
+- Microsoft Security Essentials
+- Microsoft Defender Antivirus
+cd %ProgramFiles%\Windows Defender
+MpCmdRun -removedefinitions -dynamicsignatures
+MpCmdRun -signatureUpdate
