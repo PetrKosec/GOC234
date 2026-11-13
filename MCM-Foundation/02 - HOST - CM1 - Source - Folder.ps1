@@ -147,6 +147,8 @@ Invoke-Command `
         "F:\SOURCES\ISO-PE",
         "F:\SOURCES\Drivers",
         "F:\SOURCES\OSD",
+        "F:\SOURCES\Drivers-Source",
+        "F:\SOURCES\Drivers-Destination",
         "F:\SOURCES\Packages",
         "F:\SOURCES\Updates",
         "F:\SOURCES\Updates\ADR",
