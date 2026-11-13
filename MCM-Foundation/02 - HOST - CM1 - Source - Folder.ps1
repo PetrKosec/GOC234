@@ -142,21 +142,26 @@ Invoke-Command `
 
     $Folders = @(
         "F:\SOURCES",
-        "F:\SOURCES\APPs",
         "F:\SOURCES\Scripts",
         "F:\SOURCES\ISO-OS",
         "F:\SOURCES\ISO-PE",
         "F:\SOURCES\Drivers",
         "F:\SOURCES\OSD",
         "F:\SOURCES\Packages",
-
+        "F:\SOURCES\Updates",
+        "F:\SOURCES\Updates\ADR",
+        "F:\SOURCES\Updates\FU",
+        "F:\SOURCES\Updates\QU",
+        "F:\SOURCES\Updates\Defender",
+        "F:\SOURCES\Updates\M365",
+        "F:\SOURCES\APPs",
         "F:\SOURCES\APPs\Microsoft",
+        "F:\SOURCES\APPs\Microsoft\VisualStudioCode",
+        "F:\SOURCES\APPs\Microsoft\VisualStudioCode\1.146.0",
         "F:\SOURCES\APPs\7-ZIP",
-
         "F:\SOURCES\APPs\7-ZIP\26.05",
         "F:\SOURCES\APPs\7-ZIP\26.05\x64",
         "F:\SOURCES\APPs\7-ZIP\26.05\x86",
-
         "F:\SOURCES\APPs\7-ZIP\23.01"
     )
 
